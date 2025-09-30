@@ -1,7 +1,6 @@
 # Bookstore API
 
-## Description
-This project is a simple backend for an online bookstore.  
+## Description 
 The application allows users to browse books, authors and publishers, search and filter books, register and log in, manage their profile, use a shopping cart, and create orders.  
 Administrators can manage books, authors and publishers.
 
@@ -45,9 +44,6 @@ Administrators can manage books, authors and publishers.
 - **POST /api/v1/orders** — create an order from the current shopping cart (requires authentication).  
 - **GET /api/v1/orders** — list all orders of the authenticated user.  
 - **GET /api/v1/orders/{id}** — get details of a specific order.  
-
-### Info
-- **GET /api/v1/info/about** — static “About us” information.  
 
 ---
 
