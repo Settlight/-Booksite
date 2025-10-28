@@ -1,0 +1,203 @@
+Index: requirements.txt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>asgiref==3.10.0\r\nDjango==5.2.7\r\ndjango-cors-headers==4.9.0\r\ndjangorestframework==3.16.1\r\nsqlparse==0.5.3\r\ntzdata==2025.2\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-16LE
+===================================================================
+diff --git a/requirements.txt b/requirements.txt
+--- a/requirements.txt	(revision 41ddced593bc1e4f0f9acfb163a93eda3eeea099)
++++ b/requirements.txt	(date 1761658165884)
+@@ -1,6 +1,9 @@
+-asgiref==3.10.0
+-Django==5.2.7
+-django-cors-headers==4.9.0
+-djangorestframework==3.16.1
+-sqlparse==0.5.3
+-tzdata==2025.2
++asgiref
++Django
++django-cors-headers
++djangorestframework
++sqlparse
++tzdata
++pytest
++pytest-django
++coverage
+Index: README.md
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+># Bookstore API\r\n\r\n## Description \r\nThe application allows users to browse books, authors and publishers, search and filter books, register and log in, manage their profile, use a shopping cart, and create orders.  \r\nAdministrators can manage books, authors and publishers.\r\n\r\n---\r\n\r\n## API Endpoints\r\n\r\n### Books\r\n- **GET /api/v1/books** — list all books. Supports search (`q`), filters (`author_id`, `publisher_id`, `genre`), sorting (`price_asc`, `price_desc`), and pagination (`page`, `page_size`).  \r\n- **GET /api/v1/books/{id}** — get details of a specific book.  \r\n- **POST /api/v1/books** (admin) — create a new book.  \r\n- **PATCH /api/v1/books/{id}** (admin) — update book information.  \r\n- **DELETE /api/v1/books/{id}** (admin) — remove a book.  \r\n\r\n### Authors\r\n- **GET /api/v1/authors** — list authors.  \r\n- **GET /api/v1/authors/{id}** — author info and their books.  \r\n- **POST /api/v1/authors** (admin) — add a new author.  \r\n- **PATCH /api/v1/authors/{id}** (admin) — edit author.  \r\n- **DELETE /api/v1/authors/{id}** (admin) — delete author.  \r\n\r\n### Publishers\r\n- **GET /api/v1/publishers** — list publishers.  \r\n- **GET /api/v1/publishers/{id}** — publisher info and their books.  \r\n- **POST /api/v1/publishers** (admin) — add a new publisher.  \r\n- **PATCH /api/v1/publishers/{id}** (admin) — edit publisher.  \r\n- **DELETE /api/v1/publishers/{id}** (admin) — delete publisher.  \r\n\r\n### Auth / Users\r\n- **POST /api/v1/auth/register** — user registration.  \r\n- **POST /api/v1/auth/login** — log in and get access token.  \r\n- **GET /api/v1/users/me** — view profile (requires authentication).  \r\n- **PATCH /api/v1/users/me** — edit profile (requires authentication).  \r\n\r\n### Shopping Cart\r\n- **GET /api/v1/cart** — view items in the shopping cart (requires authentication).  \r\n- **POST /api/v1/cart/items** — add or update an item in the shopping cart.  \r\n- **DELETE /api/v1/cart/items/{book_id}** — remove item from the shopping cart.  \r\n\r\n### Orders\r\n- **POST /api/v1/orders** — create an order from the current shopping cart (requires authentication).  \r\n- **GET /api/v1/orders** — list all orders of the authenticated user.  \r\n- **GET /api/v1/orders/{id}** — get details of a specific order.  \r\n\r\n---\r\n\r\n## Database\r\nThe database contains the following entities:  \r\n\r\n- **Users** — store user accounts.  \r\n- **Books** — information about books.  \r\n- **Authors** — authors of books.  \r\n- **BookAuthors** — join table for many-to-many relation between books and authors.  \r\n- **Publishers** — information about publishers.  \r\n- **ShoppingCart** — items that users add before creating an order.  \r\n- **Orders** — orders created by users.  \r\n- **OrderItems** — books included in each order.  \r\n\r\n---\r\n\r\n## ER Diagram\r\n\r\n![img.png](img.png)
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/README.md b/README.md
+--- a/README.md	(revision 41ddced593bc1e4f0f9acfb163a93eda3eeea099)
++++ b/README.md	(date 1761658245904)
+@@ -1,66 +1,13 @@
+-# Bookstore API
+-
+-## Description 
+-The application allows users to browse books, authors and publishers, search and filter books, register and log in, manage their profile, use a shopping cart, and create orders.  
+-Administrators can manage books, authors and publishers.
++python -m venv .venv
+ 
+----
++.venv\Scripts\activate #Windows
+ 
+-## API Endpoints
++source .venv/bin/activate #Mac
+ 
+-### Books
+-- **GET /api/v1/books** — list all books. Supports search (`q`), filters (`author_id`, `publisher_id`, `genre`), sorting (`price_asc`, `price_desc`), and pagination (`page`, `page_size`).  
+-- **GET /api/v1/books/{id}** — get details of a specific book.  
+-- **POST /api/v1/books** (admin) — create a new book.  
+-- **PATCH /api/v1/books/{id}** (admin) — update book information.  
+-- **DELETE /api/v1/books/{id}** (admin) — remove a book.  
++pip install -r requirements.txt
+ 
+-### Authors
+-- **GET /api/v1/authors** — list authors.  
+-- **GET /api/v1/authors/{id}** — author info and their books.  
+-- **POST /api/v1/authors** (admin) — add a new author.  
+-- **PATCH /api/v1/authors/{id}** (admin) — edit author.  
+-- **DELETE /api/v1/authors/{id}** (admin) — delete author.  
++python manage.py migrate
+ 
+-### Publishers
+-- **GET /api/v1/publishers** — list publishers.  
+-- **GET /api/v1/publishers/{id}** — publisher info and their books.  
+-- **POST /api/v1/publishers** (admin) — add a new publisher.  
+-- **PATCH /api/v1/publishers/{id}** (admin) — edit publisher.  
+-- **DELETE /api/v1/publishers/{id}** (admin) — delete publisher.  
+-
+-### Auth / Users
+-- **POST /api/v1/auth/register** — user registration.  
+-- **POST /api/v1/auth/login** — log in and get access token.  
+-- **GET /api/v1/users/me** — view profile (requires authentication).  
+-- **PATCH /api/v1/users/me** — edit profile (requires authentication).  
+-
+-### Shopping Cart
+-- **GET /api/v1/cart** — view items in the shopping cart (requires authentication).  
+-- **POST /api/v1/cart/items** — add or update an item in the shopping cart.  
+-- **DELETE /api/v1/cart/items/{book_id}** — remove item from the shopping cart.  
+-
+-### Orders
+-- **POST /api/v1/orders** — create an order from the current shopping cart (requires authentication).  
+-- **GET /api/v1/orders** — list all orders of the authenticated user.  
+-- **GET /api/v1/orders/{id}** — get details of a specific order.  
+-
+----
+-
+-## Database
+-The database contains the following entities:  
+-
+-- **Users** — store user accounts.  
+-- **Books** — information about books.  
+-- **Authors** — authors of books.  
+-- **BookAuthors** — join table for many-to-many relation between books and authors.  
+-- **Publishers** — information about publishers.  
+-- **ShoppingCart** — items that users add before creating an order.  
+-- **Orders** — orders created by users.  
+-- **OrderItems** — books included in each order.  
+-
+----
+-
+-## ER Diagram
++python manage.py runserver
+ 
+-![img.png](img.png)
+\ No newline at end of file
++![img_1.png](img_1.png)
+\ No newline at end of file
+Index: pytest.ini
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/pytest.ini b/pytest.ini
+new file mode 100644
+--- /dev/null	(date 1761658438535)
++++ b/pytest.ini	(date 1761658438535)
+@@ -0,0 +1,2 @@
++[pytest]
++DJANGO_SETTINGS_MODULE = bookstore.settings
+\ No newline at end of file
+Index: store/tests/test_book_negative.py
+===================================================================
+diff --git a/store/tests/test_book_negative.py b/store/tests/test_book_negative.py
+new file mode 100644
+--- /dev/null	(date 1761658807453)
++++ b/store/tests/test_book_negative.py	(date 1761658807453)
+@@ -0,0 +1,28 @@
++import pytest
++
++@pytest.mark.django_db
++def test_get_non_existing_book(api_client):
++    response = api_client.get("/api/v1/books/9999/")
++    assert response.status_code == 404
++
++@pytest.mark.django_db
++def test_create_book_without_title(api_client, sample_data):
++    payload = {
++        "description": "Adventure",
++        "price": 19.99,
++        "stock": 5,
++        "publisher": sample_data["publisher"].id,
++        "authors": [sample_data["author"].id]
++    }
++    response = api_client.post("/api/v1/books/", payload, format="json")
++    assert response.status_code == 400
++
++@pytest.mark.django_db
++def test_update_non_existing_book(api_client):
++    response = api_client.patch("/api/v1/books/9999/", {"price": 30.00}, format="json")
++    assert response.status_code == 404
++
++@pytest.mark.django_db
++def test_delete_non_existing_book(api_client):
++    response = api_client.delete("/api/v1/books/9999/")
++    assert response.status_code == 404
+\ No newline at end of file
+Index: store/tests/test_book.py
+===================================================================
+diff --git a/store/tests/test_book.py b/store/tests/test_book.py
+new file mode 100644
+--- /dev/null	(date 1761658750287)
++++ b/store/tests/test_book.py	(date 1761658750287)
+@@ -0,0 +1,34 @@
++import pytest
++
++@pytest.mark.django_db
++def test_get_books(api_client, sample_data):
++    response = api_client.get("/api/v1/books/")
++    assert response.status_code == 200
++    assert any(b["title"] == "Harry Potter" for b in response.json())
++
++@pytest.mark.django_db
++def test_create_book(api_client, sample_data):
++    payload = {
++        "title": "The Hobbit",
++        "description": "Adventure",
++        "price": 19.99,
++        "stock": 5,
++        "publisher": sample_data["publisher"].id,
++        "authors": [sample_data["author"].id]
++    }
++    response = api_client.post("/api/v1/books/", payload, format="json")
++    assert response.status_code == 201
++    assert response.json()["title"] == "The Hobbit"
++
++@pytest.mark.django_db
++def test_update_book(api_client, sample_data):
++    book_id = sample_data["book"].id
++    response = api_client.patch(f"/api/v1/books/{book_id}/", {"price": 30.00}, format="json")
++    assert response.status_code == 200
++    assert response.json()["price"] == "30.00"
++
++@pytest.mark.django_db
++def test_delete_book(api_client, sample_data):
++    book_id = sample_data["book"].id
++    response = api_client.delete(f"/api/v1/books/{book_id}/")
++    assert response.status_code == 204
+\ No newline at end of file

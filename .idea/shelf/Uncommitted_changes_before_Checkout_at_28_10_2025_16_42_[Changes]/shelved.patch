@@ -1,0 +1,99 @@
+Index: bookstore/settings.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>from pathlib import Path\r\n\r\nBASE_DIR = Path(__file__).resolve().parent.parent\r\n\r\nSECRET_KEY = 'your-secret-key'\r\nDEBUG = True\r\nALLOWED_HOSTS = []\r\n\r\nINSTALLED_APPS = [\r\n    'django.contrib.admin',\r\n    'django.contrib.auth',\r\n    'django.contrib.contenttypes',\r\n    'django.contrib.sessions',\r\n    'django.contrib.messages',\r\n    'django.contrib.staticfiles',\r\n    'rest_framework',\r\n    'corsheaders',\r\n    'store',\r\n]\r\n\r\nMIDDLEWARE = [\r\n    'django.middleware.security.SecurityMiddleware',\r\n    'django.contrib.sessions.middleware.SessionMiddleware',\r\n    'corsheaders.middleware.CorsMiddleware',\r\n    'django.middleware.common.CommonMiddleware',\r\n    'django.middleware.csrf.CsrfViewMiddleware',\r\n    'django.contrib.auth.middleware.AuthenticationMiddleware',\r\n    'django.contrib.messages.middleware.MessageMiddleware',\r\n    'django.middleware.clickjacking.XFrameOptionsMiddleware',\r\n]\r\n\r\nROOT_URLCONF = 'bookstore.urls'\r\n\r\nTEMPLATES = [\r\n    {\r\n        'BACKEND': 'django.template.backends.django.DjangoTemplates',\r\n        'DIRS': [],\r\n        'APP_DIRS': True,\r\n        'OPTIONS': {\r\n            'context_processors': [\r\n                'django.template.context_processors.request',\r\n                'django.contrib.auth.context_processors.auth',\r\n                'django.contrib.messages.context_processors.messages',\r\n            ],\r\n        },\r\n    },\r\n]\r\n\r\nWSGI_APPLICATION = 'bookstore.wsgi.application'\r\n\r\nDATABASES = {\r\n    'default': {\r\n        'ENGINE': 'django.db.backends.sqlite3',\r\n        'NAME': BASE_DIR / 'db.sqlite3',\r\n    }\r\n}\r\n\r\nLANGUAGE_CODE = 'en-us'\r\nTIME_ZONE = 'UTC'\r\nUSE_I18N = True\r\nUSE_TZ = True\r\n\r\nSTATIC_URL = 'static/'\r\nDEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'\r\n\r\nCORS_ALLOW_ALL_ORIGINS = True\r\n
+===================================================================
+diff --git a/bookstore/settings.py b/bookstore/settings.py
+--- a/bookstore/settings.py	(revision 41ddced593bc1e4f0f9acfb163a93eda3eeea099)
++++ b/bookstore/settings.py	(date 1761658387516)
+@@ -63,4 +63,4 @@
+ STATIC_URL = 'static/'
+ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+ 
+-CORS_ALLOW_ALL_ORIGINS = True
++CORS_ALLOW_ALL_ORIGINS = True
+\ No newline at end of file
+Index: store/tests.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/store/tests.py b/store/tests/conftest.py
+rename from store/tests.py
+rename to store/tests/conftest.py
+--- a/store/tests.py	(revision 41ddced593bc1e4f0f9acfb163a93eda3eeea099)
++++ b/store/tests/conftest.py	(date 1761658742571)
+@@ -1,3 +1,21 @@
+-from django.test import TestCase
++import pytest
++from rest_framework.test import APIClient
++from store.models import Author, Publisher, Book
+ 
+-# Create your tests here.
++@pytest.fixture
++def api_client():
++    return APIClient()
++
++@pytest.fixture
++def sample_data(db):
++    publisher = Publisher.objects.create(name="Test Publisher")
++    author = Author.objects.create(name="Test Author")
++    book = Book.objects.create(
++        title="Harry Potter",
++        description="Magic",
++        publisher=publisher,
++        price=10.99,
++        stock=3
++    )
++    book.authors.add(author)
++    return {"publisher": publisher, "author": author, "book": book}
+\ No newline at end of file
+Index: store/serializers.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>from rest_framework import serializers\r\nfrom .models import Book, Author, Publisher\r\n\r\nclass AuthorSerializer(serializers.ModelSerializer):\r\n    class Meta:\r\n        model = Author\r\n        fields = ['id', 'name']\r\n\r\nclass PublisherSerializer(serializers.ModelSerializer):\r\n    class Meta:\r\n        model = Publisher\r\n        fields = ['id', 'name']\r\n\r\nclass BookSerializer(serializers.ModelSerializer):\r\n    author_names = serializers.SerializerMethodField()\r\n    publisher_name = serializers.CharField(source='publisher.name', read_only=True)\r\n\r\n    class Meta:\r\n        model = Book\r\n        fields = ['id', 'title', 'description', 'author_names', 'publisher_name', 'price', 'stock']\r\n\r\n    def get_author_names(self, obj):\r\n        return \", \".join(a.name for a in obj.authors.all())\r\n
+===================================================================
+diff --git a/store/serializers.py b/store/serializers.py
+--- a/store/serializers.py	(revision 41ddced593bc1e4f0f9acfb163a93eda3eeea099)
++++ b/store/serializers.py	(date 1761658531611)
+@@ -1,23 +1,36 @@
+ from rest_framework import serializers
+ from .models import Book, Author, Publisher
+ 
++
+ class AuthorSerializer(serializers.ModelSerializer):
+     class Meta:
+         model = Author
+         fields = ['id', 'name']
+ 
++
+ class PublisherSerializer(serializers.ModelSerializer):
+     class Meta:
+         model = Publisher
+         fields = ['id', 'name']
+ 
++
+ class BookSerializer(serializers.ModelSerializer):
+-    author_names = serializers.SerializerMethodField()
++    author_names = serializers.SerializerMethodField(read_only=True)
+     publisher_name = serializers.CharField(source='publisher.name', read_only=True)
+ 
+     class Meta:
+         model = Book
+-        fields = ['id', 'title', 'description', 'author_names', 'publisher_name', 'price', 'stock']
++        fields = [
++            'id',
++            'title',
++            'description',
++            'authors',
++            'publisher',
++            'author_names',
++            'publisher_name',
++            'price',
++            'stock'
++        ]
+ 
+     def get_author_names(self, obj):
+-        return ", ".join(a.name for a in obj.authors.all())
++        return ", ".join(a.name for a in obj.authors.all())
+\ No newline at end of file
